@@ -1,0 +1,122 @@
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<?php
+
+
+$randomBeer;
+$beer_id;
+$searchResults;
+
+function getRandomBeer(){
+    $json = file_get_contents('https://api.brewerydb.com/v2/beer/random?key=48a2a9fe3bea0a10998860f8da741958&format=json');
+    return json_decode($json);
+
+}
+
+if(isset($_GET['random'])){
+    $randomBeer = getRandomBeer();
+    $beer_id = getRandomBeer()->data->id;   
+}
+
+function search(){
+    $json = file_get_contents('https://api.brewerydb.com/v2/search?q='.str_replace(" ","%20",$_POST["search"]).'&type='.$_POST["optrad"].'&key=48a2a9fe3bea0a10998860f8da741958&format=json');
+    return json_decode($json);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $searchResults = search();
+    $randomBeer = getRandomBeer();
+    $beer_id = getRandomBeer()->data->id;   
+}
+
+?>
+
+
+<section>
+    <div class="row">
+        <div class="container">
+            <h1>Distilled SCH Beer Application</h1>
+
+            <div class="row panel panel-default">
+                <div class="col-xs-12">
+                    <h2><?= $randomBeer->data->name; ?></h2>
+                </div>
+                <div class="col-md-4">
+                    <img src="<?= $randomBeer->data->labels->medium; ?>" class="img-responsive"/>
+                </div>
+                <div class="col-sm-8">
+                    <p class="lead">
+                        <?php if(isset($randomBeer->data->description)): ?>
+                        <?= $randomBeer->data->description; ?>
+                        <?php else:?>
+                        <?= "Description Unavailable";?>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <div class="col-xs-12 center-block">
+                    <br/>
+                    <br/>
+                    <a class="btn btn-lg btn-info" href="index.php?random=true">Another Beer!</a>
+                    <a class="btn btn-lg btn-info" href="brewery.php?beer_id=<?= $beer_id; ?>">More From This Brewery</a>
+                    <br/>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="row">
+        <div class="container">
+            <h1>Search</h1>
+            
+            <form class="form-inline" action="index.php" method="post">
+                <div class="form-group">
+                    <input name="search" type="search" placeholder="Search..." class="form-control" id="search">
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="optrad" value="beer" checked> Beer</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="optrad" value="brewery"> Brewery</label>
+                </div>
+                <button type="submit" class="btn btn-lg btn-info">Search</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="row">
+        <div class="container">
+            <h1>Search Results</h1>
+
+            <div class="row panel panel-default">
+                <div class="col-xs-12">
+                    <h2><?= $searchResults->data[0]->name; ?></h2>
+                </div>
+                <div class="col-md-4">
+                    <img src="<?= $searchResults->data[0]->images->medium; ?>" class="img-responsive"/>
+                </div>
+                <div class="col-sm-8">
+                    <p class="lead">
+                        <?php if(isset($searchResults->data[0]->description)): ?>
+                        <?= $searchResults->data[0]->description; ?>
+                        <?php else:?>
+                        <?= "Description Unavailable";?>
+                        <?php endif; ?>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
