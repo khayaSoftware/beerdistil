@@ -1,36 +1,6 @@
-
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<?php
-
-
-$randomBeer;
-$beer_id;
-$searchResults;
-
-function getRandomBeer(){
-    $json = file_get_contents('https://api.brewerydb.com/v2/beer/random?key=48a2a9fe3bea0a10998860f8da741958&format=json');
-    return json_decode($json);
-
-}
-
-if(isset($_GET['random'])){
-    $randomBeer = getRandomBeer();
-    $beer_id = getRandomBeer()->data->id;   
-}
-
-function search(){
-    $json = file_get_contents('https://api.brewerydb.com/v2/search?q='.str_replace(" ","%20",$_POST["search"]).'&type='.$_POST["optrad"].'&key=48a2a9fe3bea0a10998860f8da741958&format=json');
-    return json_decode($json);
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $searchResults = search();
-    $randomBeer = getRandomBeer();
-    $beer_id = getRandomBeer()->data->id;   
-}
-
-?>
+<?php require_once("searchandrandom.php"); ?>
 
 
 <section>
@@ -47,11 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="col-sm-8">
                     <p class="lead">
-                        <?php if(isset($randomBeer->data->description)): ?>
                         <?= $randomBeer->data->description; ?>
-                        <?php else:?>
-                        <?= "Description Unavailable";?>
-                        <?php endif; ?>
                     </p>
                 </div>
                 <div class="col-xs-12 center-block">
@@ -72,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="container">
             <h1>Search</h1>
             
-            <form class="form-inline" action="index.php" method="post">
+            <form id="formSearch" class="form-inline" action="index.php" method="post">
                 <div class="form-group">
                     <input name="search" type="search" placeholder="Search..." class="form-control" id="search">
                 </div>
@@ -88,31 +54,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </section>
 
-<section>
-    <div class="row">
-        <div class="container">
-            <h1>Search Results</h1>
+<?php if(isset($searchResults)): ?>
+    <?php if($_POST["optrad"] === "brewery"): ?>;
+    <section>
+        <div class="row">
+            <div class="container">
+                <h1>Search Results</h1>
 
-            <div class="row panel panel-default">
-                <div class="col-xs-12">
-                    <h2><?= $searchResults->data[0]->name; ?></h2>
-                </div>
-                <div class="col-md-4">
-                    <img src="<?= $searchResults->data[0]->images->medium; ?>" class="img-responsive"/>
-                </div>
-                <div class="col-sm-8">
-                    <p class="lead">
-                        <?php if(isset($searchResults->data[0]->description)): ?>
-                        <?= $searchResults->data[0]->description; ?>
-                        <?php else:?>
-                        <?= "Description Unavailable";?>
-                        <?php endif; ?>
-                    </p>
+                <div class="row panel panel-default">
+                    <div class="col-xs-12">
+                        <h2><?= $searchResults->data[0]->name; ?></h2>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="<?= $searchResults->data[0]->images->medium; ?>" class="img-responsive"/>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="lead">
+                            <?php if(isset($searchResults->data[0]->description)): ?>
+                            <?= $searchResults->data[0]->description; ?>
+                            <?php else:?>
+                            <?= "Description Unavailable";?>
+                            <?php endif; ?>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+    <?php elseif($_POST["optrad"] === "beer"): ?>;
+    <section>
+        <div class="row">
+            <div class="container">
+                <h1>Search Results</h1>
+
+                <div class="row panel panel-default">
+                    <div class="col-xs-12">
+                        <h2><?= $searchResults->data[0]->name; ?></h2>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="<?= $searchResults->data[0]->labels->medium; ?>" class="img-responsive"/>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="lead">
+                            <?php if(isset($searchResults->data[0]->description)): ?>
+                            <?= $searchResults->data[0]->description; ?>
+                            <?php else:?>
+                            <?= "Description Unavailable";?>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    
+<?php endif; ?>
+
+<?php if(!isValid($_POST["search"])):?>
+    <section>
+        <div class="row">
+            <div class="container">
+                <div class="alert alert-danger">
+                    <strong>Error!</strong> Invalid input
+                </div>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
 
 <script
         src="https://code.jquery.com/jquery-3.2.1.min.js"
