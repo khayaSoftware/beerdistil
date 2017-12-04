@@ -24,7 +24,7 @@
                     <br/>
                     <br/>
                     <a class="btn btn-lg btn-info" href="index.php?random=true">Another Beer!</a>
-                    <a class="btn btn-lg btn-info" href="brewery.php?beer_id=<?= $beer_id; ?>">More From This Brewery</a>
+                    <a class="btn btn-lg btn-info" href="brewery.php?beer_id=<?= $beer_id; ?>" target="_blank">More From This Brewery</a>
                     <br/>
                     <br/>
                 </div>
@@ -54,75 +54,7 @@
     </div>
 </section>
 
-<?php if(isset($searchResults)): ?>
-    <?php if($_POST["optrad"] === "brewery"): ?>;
-    <section>
-        <div class="row">
-            <div class="container">
-                <h1>Search Results</h1>
-
-                <div class="row panel panel-default">
-                    <div class="col-xs-12">
-                        <h2><?= $searchResults->data[0]->name; ?></h2>
-                    </div>
-                    <div class="col-md-4">
-                        <img src="<?= $searchResults->data[0]->images->medium; ?>" class="img-responsive"/>
-                    </div>
-                    <div class="col-sm-8">
-                        <p class="lead">
-                            <?php if(isset($searchResults->data[0]->description)): ?>
-                            <?= $searchResults->data[0]->description; ?>
-                            <?php else:?>
-                            <?= "Description Unavailable";?>
-                            <?php endif; ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <?php elseif($_POST["optrad"] === "beer"): ?>;
-    <section>
-        <div class="row">
-            <div class="container">
-                <h1>Search Results</h1>
-
-                <div class="row panel panel-default">
-                    <div class="col-xs-12">
-                        <h2><?= $searchResults->data[0]->name; ?></h2>
-                    </div>
-                    <div class="col-md-4">
-                        <img src="<?= $searchResults->data[0]->labels->medium; ?>" class="img-responsive"/>
-                    </div>
-                    <div class="col-sm-8">
-                        <p class="lead">
-                            <?php if(isset($searchResults->data[0]->description)): ?>
-                            <?= $searchResults->data[0]->description; ?>
-                            <?php else:?>
-                            <?= "Description Unavailable";?>
-                            <?php endif; ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <?php endif; ?>
-
-    
-<?php endif; ?>
-
-<?php if(!isValid($_POST["search"])):?>
-    <section>
-        <div class="row">
-            <div class="container">
-                <div class="alert alert-danger">
-                    <strong>Error!</strong> Invalid input
-                </div>
-            </div>
-        </div>
-    </section>
-<?php endif; ?>
+<?php require_once('Results.php'); ?>
 
 <script
         src="https://code.jquery.com/jquery-3.2.1.min.js"

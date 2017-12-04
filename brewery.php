@@ -1,24 +1,16 @@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<?php
+<?php require_once('breweryinfo.php'); ?>
 
-$beers;
-
-function getBeersByBrewery(){
-    
-    $brewery = file_get_contents('https://api.brewerydb.com/v2/beer/'.$_GET['beer_id'].'/breweries?key=48a2a9fe3bea0a10998860f8da741958&format=json');
-    
-    $beers_of_brewery = file_get_contents('https://api.brewerydb.com/v2/brewery/'.json_decode($brewery)->data[0]->id.'/beers?key=48a2a9fe3bea0a10998860f8da741958&format=json');
-    
-    return json_decode($beers_of_brewery)->data;   
-}
-
-if(isset($_GET['beer_id'])){
-    $beers = getBeersByBrewery();
-}
-    
-?>
-
+<section>
+    <div class="row">
+        <div class="container">
+            <div class="col-xs-12">
+                <h1>Beers By <?= $brewery_name; ?></h1>
+            </div>
+        </div>
+    </div>
+</section>
 
 <section>
     <div class="row">

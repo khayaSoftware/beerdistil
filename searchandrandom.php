@@ -2,10 +2,11 @@
 
 error_reporting(0);
 
-$randomBeer;
+$randomBeer = checkRandomBeer();
 $beer_id;
 $searchResults;
 $searchType;
+
 
 function getRandomBeer(){
 
@@ -18,7 +19,7 @@ function checkRandomBeer(){
     $beer;
     do{
         $beer = getRandomBeer();
-    }while(is_null($beer->data->labels->medium) && is_null($beer->data->labels->description));
+    }while((is_null($beer->data->labels->medium)) && (is_null($beer->data->description)));
     return $beer;
 }
 
@@ -29,7 +30,7 @@ if(isset($_GET['random'])){
 
 function search(){
     if(isValid($_POST["search"])){
-        $json = file_get_contents('https://api.brewerydb.com/v2/search?q='.$_POST["search"].'&type='.$_POST["optrad"].'&key=48a2a9fe3bea0a10998860f8da741958&format=json');
+        $json = file_get_contents('https://api.brewerydb.com/v2/search?q='.str_replace(" ","%20",$_POST["search"]).'&type='.$_POST["optrad"].'&key=48a2a9fe3bea0a10998860f8da741958&format=json'); //If there spaces between the name entered the api returns null
         return json_decode($json);
     }else{
         return null; 
